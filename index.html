@@ -87,7 +87,16 @@
     </section>
   </main>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "020833e41a8541f68a54919c12376f9c"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
+  <script>
+
+    
     class InputMissingError extends Error {
       constructor(message) {
         super(message);
