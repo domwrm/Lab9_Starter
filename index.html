@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9</title>
+
   <style>
-    button { margin: 3px; }
-    button:hover { cursor: pointer; }
-    #first-num, #second-num { width: 60px; }
+    button {
+      margin: 3px;
+    }
+
+    button:hover {
+      cursor: pointer;
+    }
+
+    #first-num,
+    #second-num {
+      width: 60px;
+    }
+
     output {
       border: 1px solid gray;
       display: block;
@@ -17,7 +29,11 @@
       padding: 5px;
       width: 240px;
     }
-    main { width: 800px; }
+
+    main {
+      width: 800px;
+    }
+
     #error-btns {
       column-gap: 5px;
       display: flex;
@@ -25,12 +41,22 @@
       margin-top: 30px;
       row-gap: 5px;
     }
+
     #error-btns>* {
       padding: 8px 2px;
       width: 122px;
     }
   </style>
+
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({
+      token: "24f0c6eb4a284a94bb895aae48483ae1",
+      application: "-lab9"
+    });
+  </script>
 </head>
+
 <body>
   <main>
     <form>
@@ -71,8 +97,8 @@
 
   <script>
     class InputMissingError extends Error {
-      constructor(msg) {
-        super(msg);
+      constructor(message) {
+        super(message);
         this.name = "InputMissingError";
       }
     }
@@ -83,60 +109,61 @@
       let output = document.querySelector('output');
 
       try {
-        const first = document.querySelector('#first-num')?.value;
-        const secondInput = document.querySelector('#second-num');
-        const op = document.querySelector('#operator').value;
+        const firstNum = document.querySelector('#first-num')?.value;
+        const secondNumInput = document.querySelector('#second-num');
+        const operator = document.querySelector('#operator').value;
 
-        if (!secondInput) throw new InputMissingError("Missing field");
-        const second = secondInput.value;
+        if (!secondNumInput) throw new InputMissingError("Second input field is missing from the DOM.");
+        const secondNum = secondNumInput.value;
 
-        if (first === "" || second === "") throw new InputMissingError("Empty input");
-        if (isNaN(first) || isNaN(second)) throw new TypeError("NaN");
+        if (firstNum === "" || secondNum === "") throw new InputMissingError("Both numbers must be provided.");
+        if (isNaN(firstNum) || isNaN(secondNum)) throw new TypeError("Inputs must be valid numbers.");
+        if (operator === "/" && Number(secondNum) === 0) {
+          throw new Error("Division by zero is not allowed.");
+        }
 
-        if (op === "/" && Number(second) === 0) throw new Error("Div by 0");
-
-        const result = eval(`${first} ${op} ${second}`);
+        const result = eval(`${firstNum} ${operator} ${secondNum}`);
         output.innerHTML = result;
-        console.log("Result:", result);
+        console.log("Calculation result:", result);
       } catch (err) {
         output.innerHTML = "Error: " + err.message;
         console.error(err.name + ":", err.message);
       } finally {
-        console.log("Done");
+        console.log("Calculation finished.");
       }
     });
 
     const getValues = () => {
       const first = document.querySelector('#first-num')?.value || "";
       const second = document.querySelector('#second-num')?.value || "";
-      const op = document.querySelector('#operator').value;
-      return { first, second, op, expression: `${first} ${op} ${second}` };
+      const operator = document.querySelector('#operator').value;
+      return { first, second, operator, expression: `${first} ${operator} ${second}` };
     };
 
     const errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     errorBtns[0].addEventListener("click", () => {
       const { expression } = getValues();
-      console.log(expression);
+      console.log("Console Log:", expression);
     });
 
     errorBtns[1].addEventListener("click", () => {
       const { expression } = getValues();
-      console.error(expression);
+      console.error("Console Error:", expression);
     });
 
     errorBtns[2].addEventListener("click", () => {
-      console.count("Click");
+      console.count("Button Click Count");
     });
 
     errorBtns[3].addEventListener("click", () => {
       const { expression } = getValues();
-      console.warn(expression);
+      console.warn("Console Warn:", expression);
     });
 
     errorBtns[4].addEventListener("click", () => {
       const { first } = getValues();
-      console.assert(!isNaN(first), "Not a number");
+      console.assert(!isNaN(first), "First input is not a number!");
     });
 
     errorBtns[5].addEventListener("click", () => {
@@ -153,11 +180,11 @@
     });
 
     errorBtns[8].addEventListener("click", () => {
-      console.group("Group");
-      const v = getValues();
-      console.log(v.first);
-      console.log(v.second);
-      console.log(v.op);
+      console.group("Input Group");
+      const values = getValues();
+      console.log("First Number:", values.first);
+      console.log("Second Number:", values.second);
+      console.log("Operator:", values.operator);
     });
 
     errorBtns[9].addEventListener("click", () => {
@@ -165,30 +192,34 @@
     });
 
     errorBtns[10].addEventListener("click", () => {
-      const row = [getValues()];
-      console.table(row);
+      const values = [getValues()];
+      console.table(values);
     });
 
     errorBtns[11].addEventListener("click", () => {
-      console.time("Timer");
+      console.time("Timer Demo");
     });
 
     errorBtns[12].addEventListener("click", () => {
-      console.timeEnd("Timer");
+      console.timeEnd("Timer Demo");
     });
 
     errorBtns[13].addEventListener("click", () => {
-      console.trace("Trace");
+      function traceBack() {
+        console.trace("Trace from error button");
+      }
+      traceBack();
     });
 
     window.onerror = function () {
-      console.log("Global error caught");
+      console.log("Global error caught successfully.");
       return true;
     };
 
     errorBtns[14].addEventListener("click", () => {
-      undefinedFunction();
+      nonexistentFunction();
     });
   </script>
 </body>
+
 </html>
