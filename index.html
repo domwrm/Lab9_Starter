@@ -200,9 +200,15 @@
       traceBack();
     });
 
+    window.onerror = function () {
+      console.log("Global error caught successfully.");
+      return true;
+    };
+
     errorBtns[14].addEventListener("click", () => {
-      throw new Error("Manually triggered global error");
+      triggerUndefinedFunction();
     });
+
   </script>
 </body>
 
