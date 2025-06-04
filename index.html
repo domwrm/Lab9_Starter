@@ -88,6 +88,13 @@
   </main>
 
   <script>
+    class InputMissingError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "InputMissingError";
+      }
+    }
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -98,71 +105,69 @@
         const secondNumInput = document.querySelector('#second-num');
         const operator = document.querySelector('#operator').value;
 
-        if (!secondNumInput) throw new Error("Second input field is missing from the DOM.");
-
+        if (!secondNumInput) throw new InputMissingError("Second input field is missing from the DOM.");
         const secondNum = secondNumInput.value;
 
-        if (firstNum === "" || secondNum === "") throw new Error("Both numbers must be provided.");
-        if (isNaN(firstNum) || isNaN(secondNum)) throw new Error("Inputs must be valid numbers.");
+        if (firstNum === "" || secondNum === "") throw new InputMissingError("Both numbers must be provided.");
+        if (isNaN(firstNum) || isNaN(secondNum)) throw new TypeError("Inputs must be valid numbers.");
 
         const result = eval(`${firstNum} ${operator} ${secondNum}`);
         output.innerHTML = result;
         console.log("Calculation result:", result);
       } catch (err) {
         output.innerHTML = "Error: " + err.message;
-        console.error(err);
+        console.error(err.name + ":", err.message);
       } finally {
         console.log("Calculation finished.");
       }
     });
 
+    const getValues = () => {
+      const first = document.querySelector('#first-num')?.value || "";
+      const second = document.querySelector('#second-num')?.value || "";
+      const operator = document.querySelector('#operator').value;
+      return { first, second, operator, expression: `${first} ${operator} ${second}` };
+    };
 
-    // Console Log
+    const errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+
     errorBtns[0].addEventListener("click", () => {
       const { expression } = getValues();
       console.log("Console Log:", expression);
     });
 
-    // Console Error
     errorBtns[1].addEventListener("click", () => {
       const { expression } = getValues();
       console.error("Console Error:", expression);
     });
 
-    // Console Count
     errorBtns[2].addEventListener("click", () => {
       console.count("Button Click Count");
     });
 
-    // Console Warn
     errorBtns[3].addEventListener("click", () => {
       const { expression } = getValues();
       console.warn("Console Warn:", expression);
     });
 
-    // Console Assert
     errorBtns[4].addEventListener("click", () => {
       const { first } = getValues();
       console.assert(!isNaN(first), "First input is not a number!");
     });
 
-    // Console Clear
     errorBtns[5].addEventListener("click", () => {
       console.clear();
     });
 
-    // Console Dir
     errorBtns[6].addEventListener("click", () => {
       const values = getValues();
       console.dir(values);
     });
 
-    // Console dirxml
     errorBtns[7].addEventListener("click", () => {
       console.dirxml(document.querySelector("form"));
     });
 
-    // Console Group Start
     errorBtns[8].addEventListener("click", () => {
       console.group("Input Group");
       const values = getValues();
@@ -171,28 +176,23 @@
       console.log("Operator:", values.operator);
     });
 
-    // Console Group End
     errorBtns[9].addEventListener("click", () => {
       console.groupEnd();
     });
 
-    // Console Table
     errorBtns[10].addEventListener("click", () => {
       const values = [getValues()];
       console.table(values);
     });
 
-    // Start Timer
     errorBtns[11].addEventListener("click", () => {
-      console.time("Calculation Timer");
+      console.time("Timer Demo");
     });
 
-    // End Timer
     errorBtns[12].addEventListener("click", () => {
-      console.timeEnd("Calculation Timer");
+      console.timeEnd("Timer Demo");
     });
 
-    // Console Trace
     errorBtns[13].addEventListener("click", () => {
       function traceBack() {
         console.trace("Trace from error button");
@@ -200,6 +200,9 @@
       traceBack();
     });
 
+    errorBtns[14].addEventListener("click", () => {
+      throw new Error("Manually triggered global error");
+    });
   </script>
 </body>
 
