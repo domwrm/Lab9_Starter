@@ -61,7 +61,7 @@
           <option>*</option>
           <option>/</option>
         </select>
-        <input name="second-num" id="second-num" />
+        <!-- <input name="second-num" id="second-num" /> -->
         <button id="calculate">Calculate</button>
         <br />
         <output></output>
@@ -92,20 +92,30 @@
     form.addEventListener('submit', e => {
       e.preventDefault();
       let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+
+      try {
+        const firstNum = document.querySelector('#first-num')?.value;
+        const secondNumInput = document.querySelector('#second-num');
+        const operator = document.querySelector('#operator').value;
+
+        if (!secondNumInput) throw new Error("Second input field is missing from the DOM.");
+
+        const secondNum = secondNumInput.value;
+
+        if (firstNum === "" || secondNum === "") throw new Error("Both numbers must be provided.");
+        if (isNaN(firstNum) || isNaN(secondNum)) throw new Error("Inputs must be valid numbers.");
+
+        const result = eval(`${firstNum} ${operator} ${secondNum}`);
+        output.innerHTML = result;
+        console.log("Calculation result:", result);
+      } catch (err) {
+        output.innerHTML = "Error: " + err.message;
+        console.error(err);
+      } finally {
+        console.log("Calculation finished.");
+      }
     });
 
-    let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
-
-    const getValues = () => {
-      const first = document.querySelector('#first-num').value;
-      const second = document.querySelector('#second-num').value;
-      const operator = document.querySelector('#operator').value;
-      return { first, second, operator, expression: `${first} ${operator} ${second}` };
-    };
 
     // Console Log
     errorBtns[0].addEventListener("click", () => {
